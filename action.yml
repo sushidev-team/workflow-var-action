@@ -1,4 +1,4 @@
-name: 'Replace env vars in file'
+name: 'Workflow Var Action - Replace env vars in file'
 description: 'Replaces __TOKENS__ with environment variables in file. Handles special characters (|, &, /, etc.) safely.'
 author: 'sushidev-team'
 branding:
