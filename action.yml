@@ -1,0 +1,15 @@
+name: 'Replace env vars in file'
+description: 'Replaces __TOKENS__ with environment variables in file. Handles special characters (|, &, /, etc.) safely.'
+author: 'sushidev-team'
+branding:
+  icon: 'align-left'
+  color: 'purple'
+inputs:
+  filename:
+    description: 'File for the replacement'
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.filename }}

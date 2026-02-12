@@ -1,0 +1,12 @@
+{
+  "name": "workflow-var-action",
+  "version": "1.0.0",
+  "description": "GitHub Action to replace __TOKENS__ with environment variables in files",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
