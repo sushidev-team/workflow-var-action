@@ -12,8 +12,11 @@ function replaceVars(content, vars) {
 
     const placeholder = `__${key}__`;
 
+    // Normalize escaped pipes (\|) to plain pipes (|)
+    const normalized = value.replace(/\\\|/g, '|');
+
     // Use split/join instead of RegExp to avoid escaping issues with special chars in the value
-    content = content.split(placeholder).join(value);
+    content = content.split(placeholder).join(normalized);
   }
 
   return content;
