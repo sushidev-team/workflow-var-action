@@ -2,33 +2,35 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - master
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
-  release:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      major: ${{ steps.release.outputs.major }}
+      minor: ${{ steps.release.outputs.minor }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: node
+
+  update-major-tag:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get tag info
-        id: tag
-        run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          MAJOR=$(echo "$TAG" | cut -d. -f1)
-          echo "version=$TAG" >> "$GITHUB_OUTPUT"
-          echo "major=$MAJOR" >> "$GITHUB_OUTPUT"
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.tag.outputs.version }}
-          generate_release_notes: true
-
       - name: Update major version tag
         run: |
-          git tag -f ${{ steps.tag.outputs.major }}
-          git push origin ${{ steps.tag.outputs.major }} --force
+          git tag -f v${{ needs.release-please.outputs.major }}
+          git push origin v${{ needs.release-please.outputs.major }} --force
