@@ -85,6 +85,36 @@ describe('replaceVars', () => {
     expect(replaceVars(content, vars)).toBe('REGEX: .*+?^${}()|[]\\');
   });
 
+  test('normalizes escaped pipe \\| to plain pipe |', () => {
+    const content = 'SECRET: __TENANT_SECRET__';
+    const vars = { TENANT_SECRET: 'uuid-value\\|tokenvalue' };
+    expect(replaceVars(content, vars)).toBe('SECRET: uuid-value|tokenvalue');
+  });
+
+  test('keeps plain pipe | as is', () => {
+    const content = 'TOKEN: __API_TOKEN__';
+    const vars = { API_TOKEN: 'part1|part2' };
+    expect(replaceVars(content, vars)).toBe('TOKEN: part1|part2');
+  });
+
+  test('handles multiple escaped pipes in one value', () => {
+    const content = 'VAL: __MULTI__';
+    const vars = { MULTI: 'a\\|b\\|c' };
+    expect(replaceVars(content, vars)).toBe('VAL: a|b|c');
+  });
+
+  test('handles mix of escaped and plain pipes', () => {
+    const content = 'VAL: __MIX__';
+    const vars = { MIX: 'a|b\\|c|d' };
+    expect(replaceVars(content, vars)).toBe('VAL: a|b|c|d');
+  });
+
+  test('handles real FAIRU_TENANT_SECRET with escaped pipe', () => {
+    const content = "  FAIRU_TENANT_SECRET: '__FAIRU_TENANT_SECRET__'";
+    const vars = { FAIRU_TENANT_SECRET: '9eb46a67-5ba4-4228-a51f-f16fff25692f\\|XlazCRA1uluNoUScIdYhpOMO5qWmzbqerk1R9pzs' };
+    expect(replaceVars(content, vars)).toBe("  FAIRU_TENANT_SECRET: '9eb46a67-5ba4-4228-a51f-f16fff25692f|XlazCRA1uluNoUScIdYhpOMO5qWmzbqerk1R9pzs'");
+  });
+
   test('handles real-world k8s deployment template', () => {
     const content = [
       'apiVersion: v1',
